@@ -4,3 +4,4 @@ langchain-groq
 crewai-tools
 python-dotenv
 langchain-huggingface
+google-generativeai

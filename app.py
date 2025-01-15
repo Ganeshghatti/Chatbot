@@ -1,5 +1,5 @@
 from flask import Flask, request, jsonify
-from crewai import Agent, Task, Crew, LLM
+from crewai import Agent, Task, Crew
 from crewai_tools import PDFSearchTool
 from dotenv import load_dotenv
 import os
@@ -37,7 +37,7 @@ support_agent = Agent(
     goal='Provide accurate and helpful responses to customer queries using company documentation',
     backstory="""You are an experienced customer support specialist at The Squirrel.
     Your goal is to provide clear, concise, and accurate responses based on the company documentation.
-    If information is not available in the documents, clearly state that.""",
+    If information is not available in the documents, reply with contact information""",
     tools=[pdf_tool],
     verbose=True,
     llm=llm
@@ -48,7 +48,7 @@ def get_agent_response(query):
         description=f"""Answer the following customer query: {query}
         1. Search the documentation using the PDF tool
         2. Provide a clear and concise response
-        3. If information is not found, respond with "I apologize, but I don't have that information in the company documentation."
+        3. If information is not found, respond with "I apologize, but I don't have that information. Please contact us at info@thesquirrel.site"
         4. Keep responses professional and to the point""",
         expected_output="A clear, professional response to the customer's query based on the company documentation.",
         agent=support_agent
@@ -86,4 +86,4 @@ def chat():
         return jsonify({'error': str(e), 'status': 'error'}), 500
 
 if __name__ == '__main__':
-    app.run(debug=True, port=5000) 
+    app.run(host='0.0.0.0', port=8001) 
