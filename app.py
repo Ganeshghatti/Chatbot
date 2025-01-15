@@ -85,5 +85,9 @@ def chat():
     except Exception as e:
         return jsonify({'error': str(e), 'status': 'error'}), 500
 
+@app.route('/')
+def index():
+    return jsonify({'message': 'Welcome to the Squirrel Chatbot API'})
+
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=8002) 
