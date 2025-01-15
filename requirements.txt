@@ -5,3 +5,4 @@ crewai-tools
 python-dotenv
 langchain-huggingface
 google-generativeai
+flask-cors

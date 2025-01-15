@@ -1,4 +1,5 @@
 from flask import Flask, request, jsonify
+from flask_cors import CORS
 from crewai import Agent, Task, Crew, LLM
 from crewai_tools import PDFSearchTool
 from dotenv import load_dotenv
@@ -10,6 +11,7 @@ api_key = os.getenv("OPENAI_API_KEY")
 llm = LLM(model="groq/gemma2-9b-it", temperature=0.7, max_tokens=1500, api_key=api_key)
 
 app = Flask(__name__)
+CORS(app)  # Enable CORS for all routes
 
 # Initialize PDFSearchTool
 pdf_tool = PDFSearchTool(
@@ -31,13 +33,21 @@ pdf_tool = PDFSearchTool(
     )
 )
 
-# Create Customer Support Agent
+# Improved Customer Support Agent
 support_agent = Agent(
-    role='Customer Support Specialist',
-    goal='Provide accurate and helpful responses to customer queries using company documentation',
-    backstory="""You are an experienced customer support specialist at The Squirrel.
-    Your goal is to provide clear, concise, and accurate responses based on the company documentation.
-    If information is not available in the documents, reply with contact information""",
+    role='Customer Support Representative',
+    goal='Provide friendly and helpful customer support while maintaining professionalism',
+    backstory="""You are Sarah, a friendly customer support representative at The Squirrel. 
+    You have extensive knowledge of the company's services and products.
+    You always:
+    - Greet customers warmly
+    - Show empathy and understanding
+    - Provide clear, accurate information
+    - Use a conversational, friendly tone
+    - End conversations professionally
+    - If information isn't in the documentation, provide contact details politely
+    
+    Your responses should feel natural and helpful, not robotic.""",
     tools=[pdf_tool],
     verbose=True,
     llm=llm
@@ -45,12 +55,21 @@ support_agent = Agent(
 
 def get_agent_response(query):
     task = Task(
-        description=f"""Answer the following customer query: {query}
-        1. Search the documentation using the PDF tool
-        2. Provide a clear and concise response
-        3. If information is not found, respond with "I apologize, but I don't have that information. Please contact us at info@thesquirrel.site"
-        4. Keep responses professional and to the point""",
-        expected_output="A clear, professional response to the customer's query based on the company documentation.",
+        description=f"""Handle this customer inquiry: {query}
+
+        Guidelines:
+        1. Start with a warm greeting
+        2. Show understanding of the customer's query
+        3. Search the documentation thoroughly
+        4. Provide clear, helpful information in a conversational tone
+        5. If information isn't available, say something like:
+           "I apologize, but I don't have that specific information in my database. 
+           For the most accurate information, please contact our team at info@thesquirrel.site 
+           or visit our website at thesquirrel.site"
+        6. End with a polite closing and offer further assistance
+        
+        Remember to maintain a friendly, helpful tone throughout the conversation.""",
+        expected_output="A friendly, helpful, and professional response that addresses the customer's needs.",
         agent=support_agent
     )
     
@@ -61,7 +80,6 @@ def get_agent_response(query):
     )
     
     result = crew.kickoff()
-    # Extract the string response from CrewOutput
     return str(result)
 
 @app.route('/chat', methods=['POST'])
