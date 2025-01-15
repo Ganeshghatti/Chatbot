@@ -1,5 +1,5 @@
 from flask import Flask, request, jsonify
-from crewai import Agent, Task, Crew
+from crewai import Agent, Task, Crew, LLM
 from crewai_tools import PDFSearchTool
 from dotenv import load_dotenv
 import os
