@@ -1,0 +1,6 @@
+flask
+crewai
+langchain-groq
+crewai-tools
+python-dotenv
+langchain-huggingface
